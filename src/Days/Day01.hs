@@ -1,13 +1,12 @@
 module Days.Day01 (runDay) where
 
-import Data.List
-import Data.Maybe
+import Data.Attoparsec.Text
+import Data.List as L
 import Data.Map (Map)
 import qualified Data.Map as Map
+import Data.Maybe
 import Data.Set (Set)
 import qualified Data.Set as Set
-
-import Data.Attoparsec.Text
 import Data.Text (pack)
 import Data.Void
 
@@ -26,19 +25,29 @@ runDay = do
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = undefined
+inputParser = many1 (digit >>= return . read . pure)
 
 ------------ TYPES ------------
-type Input = Void
+type Input = [Int]
 
-type OutputA = Void
+type OutputA = Int
 
-type OutputB = Void
+type OutputB = Int
 
 ------------ PART A ------------
+shift :: Int -> [Int] -> [Int]
+shift n list = (drop n list) ++ (L.take n list)
+
+captchaScore :: Int -> Int -> Int
+captchaScore a b = if a == b then a else 0
+
 partA :: Input -> OutputA
-partA = undefined
+partA input =
+  foldr1 (+) $
+    zipWith captchaScore input (shift 1 input)
 
 ------------ PART B ------------
 partB :: Input -> OutputB
-partB = undefined
+partB input =
+  foldr1 (+) $
+    zipWith captchaScore input (shift (length input `div` 2) input)
