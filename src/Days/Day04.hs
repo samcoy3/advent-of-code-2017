@@ -25,19 +25,39 @@ runDay = do
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = undefined
+inputParser =
+  ((many1 letter) `sepBy1` (char ' '))
+    `sepBy1` endOfLine
 
 ------------ TYPES ------------
-type Input = Void
+type Input = [[String]]
 
-type OutputA = Void
+type OutputA = Int
 
-type OutputB = Void
+type OutputB = Int
 
 ------------ PART A ------------
+passPhraseUnique :: [String] -> Bool
+passPhraseUnique [] = True
+passPhraseUnique (s : ss) =
+  not (s `elem` ss)
+    && passPhraseUnique ss
+
 partA :: Input -> OutputA
-partA = undefined
+partA =
+  foldr
+    (\p a -> if passPhraseUnique p then a + 1 else a)
+    0
 
 ------------ PART B ------------
+passPhraseAnagram :: [String] -> Bool
+passPhraseAnagram [] = True
+passPhraseAnagram (s : ss) =
+  (not $ any (\word -> sort word == sort s) ss)
+    && passPhraseAnagram ss
+
 partB :: Input -> OutputB
-partB = undefined
+partB =
+  foldr
+    (\p a -> if passPhraseAnagram p then a + 1 else a)
+    0
