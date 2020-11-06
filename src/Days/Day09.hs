@@ -1,8 +1,20 @@
-module Days.Day09 where
+module Days.Day09 (runDay) where
+
+{- ORMOLU_DISABLE -}
+import Data.List
+import Data.Map (Map)
+import qualified Data.Map as Map
+import Data.Maybe
+import Data.Set (Set)
+import qualified Data.Set as Set
+import Data.Vector (Vector)
+import qualified Data.Vector as Vec
 
 import Data.Attoparsec.Text as A
 import Data.Text (pack)
 import qualified Data.Text as Text (length)
+import Data.Void
+{- ORMOLU_ENABLE -}
 
 ------------ DAY LOGIC ------------
 runDay :: IO ()
