@@ -8,6 +8,8 @@ import Data.Maybe
 import Data.Set (Set)
 import qualified Data.Set as Set
 import Data.Text (pack)
+import Data.Vector (Vector)
+import qualified Data.Vector as Vec
 import Data.Void
 
 ------------ DAY LOGIC ------------
@@ -25,19 +27,32 @@ runDay = do
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = undefined
+inputParser = signed decimal `sepBy1` endOfLine
 
 ------------ TYPES ------------
-type Input = Void
+type Input = [Int]
 
-type OutputA = Void
+type OutputA = Int
 
-type OutputB = Void
+type OutputB = Int
 
 ------------ PART A ------------
+performJumps :: (Int -> Int) -> [Int] -> Int
+performJumps updater = performJumps' 0 0 . Vec.fromList
+  where
+    performJumps' steps pointer jumps =
+      if
+          | jumps Vec.!? pointer == Nothing -> steps
+          | otherwise ->
+            performJumps'
+              (steps + 1)
+              (pointer + (jumps Vec.! pointer))
+              (jumps Vec.// [(pointer, updater (jumps Vec.! pointer))])
+
 partA :: Input -> OutputA
-partA = undefined
+partA = performJumps (+ 1)
 
 ------------ PART B ------------
+
 partB :: Input -> OutputB
-partB = undefined
+partB = performJumps (\v -> if v >= 3 then v - 1 else v + 1)
