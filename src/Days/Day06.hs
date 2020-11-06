@@ -8,6 +8,8 @@ import Data.Maybe
 import Data.Set (Set)
 import qualified Data.Set as Set
 import Data.Text (pack)
+import Data.Vector (Vector)
+import qualified Data.Vector as Vec
 import Data.Void
 
 ------------ DAY LOGIC ------------
@@ -25,19 +27,48 @@ runDay = do
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = undefined
+inputParser =
+  Vec.fromList
+    <$> decimal `sepBy1` char '\t'
 
 ------------ TYPES ------------
-type Input = Void
+type Input = Vector Int
 
-type OutputA = Void
+type OutputA = Int
 
-type OutputB = Void
+type OutputB = Int
 
 ------------ PART A ------------
+timeUntilCycle :: (Eq a) => (a -> a) -> a -> Int
+timeUntilCycle f init = timeUntilCycle' [init] f init
+  where
+    timeUntilCycle' acc f current =
+      if
+          | f current `elem` acc -> length acc
+          | otherwise -> timeUntilCycle' ((f current) : acc) f (f current)
+
+performOneCycle :: Vector Int -> Vector Int
+performOneCycle banks =
+  let max = Vec.maxIndex banks
+      valueInMax = banks Vec.! max
+      redistributees = fmap ((`mod` (Vec.length banks)) . (+ max)) [1 .. valueInMax]
+      incCount Nothing = Just 1
+      incCount (Just a) = Just (a + 1)
+      vecUpdates = Map.toList $ foldr (Map.alter incCount) Map.empty redistributees
+      vecUpdatesAsVec = (Vec.replicate (Vec.length banks) 0) Vec.// vecUpdates
+   in Vec.zipWith (+) vecUpdatesAsVec $ banks Vec.// [(max, 0)]
+
 partA :: Input -> OutputA
-partA = undefined
+partA = timeUntilCycle performOneCycle
 
 ------------ PART B ------------
+timeUntilSecondCycle :: (Eq a) => (a -> a) -> a -> Int
+timeUntilSecondCycle f init = timeUntilSecondCycle' [init] f init
+  where
+    timeUntilSecondCycle' acc f current =
+      if
+          | f current `elem` acc -> timeUntilCycle f (f current)
+          | otherwise -> timeUntilSecondCycle' ((f current) : acc) f (f current)
+
 partB :: Input -> OutputB
-partB = undefined
+partB = timeUntilSecondCycle performOneCycle
