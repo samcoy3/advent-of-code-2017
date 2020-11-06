@@ -25,19 +25,32 @@ runDay = do
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = undefined
+inputParser = (decimal `sepBy1` (many1 $ char '\t')) `sepBy1` endOfLine
 
 ------------ TYPES ------------
-type Input = Void
+type Input = [[Int]]
 
-type OutputA = Void
+type OutputA = Int
 
-type OutputB = Void
+type OutputB = Int
 
 ------------ PART A ------------
 partA :: Input -> OutputA
-partA = undefined
+partA = sum . (fmap rowChecksum)
+  where
+    rowChecksum row = (maximum row) - (minimum row)
 
 ------------ PART B ------------
 partB :: Input -> OutputB
-partB = undefined
+partB = sum . (fmap rowChecksum)
+  where
+    rowChecksum [] = error "No evenly-dividing pair!"
+    rowChecksum (x : xs) = case findMatch x xs of
+      Just n -> n
+      Nothing -> rowChecksum xs
+    findMatch x [] = Nothing
+    findMatch x (y : ys) =
+      if
+          | x `mod` y == 0 -> Just $ x `div` y
+          | y `mod` x == 0 -> Just $ y `div` x
+          | otherwise -> findMatch x ys
