@@ -39,6 +39,7 @@ type OutputA = Int
 type OutputB = Int
 
 ------------ PART A ------------
+-- This calculates the time until a function on a type "loops"
 timeUntilCycle :: (Eq a) => (a -> a) -> a -> Int
 timeUntilCycle f init = timeUntilCycle' [init] f init
   where
@@ -47,6 +48,7 @@ timeUntilCycle f init = timeUntilCycle' [init] f init
           | f current `elem` acc -> length acc
           | otherwise -> timeUntilCycle' ((f current) : acc) f (f current)
 
+-- This performs one cycle of the redistribution
 performOneCycle :: Vector Int -> Vector Int
 performOneCycle banks =
   let max = Vec.maxIndex banks
@@ -62,6 +64,8 @@ partA :: Input -> OutputA
 partA = timeUntilCycle performOneCycle
 
 ------------ PART B ------------
+-- Like above, this function calculates the time between the first repeat and the first "three-peat"
+-- It calls the function above when it hits a repeat for the first time
 timeUntilSecondCycle :: (Eq a) => (a -> a) -> a -> Int
 timeUntilSecondCycle f init = timeUntilSecondCycle' [init] f init
   where

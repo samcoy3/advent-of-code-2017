@@ -37,11 +37,13 @@ type OutputA = Int
 type OutputB = Int
 
 ------------ PART A ------------
+-- Performs the instruction jumps according to the specification
 performJumps :: (Int -> Int) -> [Int] -> Int
 performJumps updater = performJumps' 0 0 . Vec.fromList
   where
     performJumps' steps pointer jumps =
       if
+          -- If we jump outside the vector then we're finished
           | jumps Vec.!? pointer == Nothing -> steps
           | otherwise ->
             performJumps'

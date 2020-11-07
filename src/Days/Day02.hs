@@ -25,7 +25,9 @@ runDay = do
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = (decimal `sepBy1` (many1 $ char '\t')) `sepBy1` endOfLine
+inputParser =
+  (decimal `sepBy1` (many1 $ char '\t'))
+    `sepBy1` endOfLine
 
 ------------ TYPES ------------
 type Input = [[Int]]
@@ -44,6 +46,7 @@ partA = sum . (fmap rowChecksum)
 partB :: Input -> OutputB
 partB = sum . (fmap rowChecksum)
   where
+    -- Finds an evenly dividing pair and performs the division
     rowChecksum [] = error "No evenly-dividing pair!"
     rowChecksum (x : xs) = case findMatch x xs of
       Just n -> n

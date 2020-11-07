@@ -44,6 +44,7 @@ data ProcessTree = ProcessTree
     processDependencies :: Map String String
   }
 
+-- Given one line of the problem input, combines it with an existing ProcessTree
 insertProcessAndEdges :: (String, Int) -> [String] -> ProcessTree -> ProcessTree
 insertProcessAndEdges (name, weight) children ProcessTree {..} =
   ProcessTree
@@ -60,12 +61,14 @@ type OutputA = String
 type OutputB = Int
 
 ------------ PART A ------------
+-- This part assumes that the ProcessTree is in fact a tree
 partA :: Input -> OutputA
 partA ProcessTree {..} =
   let processes = Map.keys processWeights
    in fromJust $ find (\p -> not $ p `elem` Map.keys processDependencies) processes
 
 ------------ PART B ------------
+-- This makes the ProocessTree, into a Data.Tree (a rose tree)
 makeTree :: ProcessTree -> Tree Int
 makeTree pt@ProcessTree {..} = Tree.unfoldTree unfolder (partA pt)
   where
@@ -74,6 +77,10 @@ makeTree pt@ProcessTree {..} = Tree.unfoldTree unfolder (partA pt)
         Map.keys (Map.filter (== node) processDependencies)
       )
 
+-- This function is a bit complicated:
+-- - It assumes that the tree is unbalanced, until a point where it suddenly is not
+-- - At that point, it's the root of that subtree that is "the problem"
+-- - Every time we recurse down a level, we pass down the "correct value" for the root of the subtree we're considering, in case that node is "the problem". If it is the problem, then we just return the value we've passed down
 findMisbalance :: Tree Int -> Int
 findMisbalance (Node _ []) = error "No findMisbalance"
 findMisbalance (Node a trees) = findMisbalance' 0 (Node a trees)
@@ -81,6 +88,10 @@ findMisbalance (Node a trees) = findMisbalance' 0 (Node a trees)
     findMisbalance' correctValue (Node _ trees) = case oddOneOut trees of
       Nothing -> correctValue
       Just (newCorrectValue, unbalancedTree) -> findMisbalance' newCorrectValue unbalancedTree
+    -- Returns Nothing if all the subtrees are the same weight
+    -- Otherwise, finds the "odd tree out", and returns a pair containing:
+    -- - The correct value for the root of the "odd tree out", assuming the root itself is at fault
+    -- - The "odd tree out" itself
     oddOneOut trees =
       let oddTree = filter (\t -> not $ sumOfTree t `elem` (fmap sumOfTree $ delete t trees)) trees
        in case oddTree of
@@ -91,6 +102,7 @@ findMisbalance (Node a trees) = findMisbalance' 0 (Node a trees)
                   x
                 )
             _ -> error "Two odd ones out? What is this?"
+    -- Sums the nodes in a tree using a fold
     sumOfTree = Tree.foldTree (\r ls -> sum $ r : ls)
 
 partB :: Input -> OutputB

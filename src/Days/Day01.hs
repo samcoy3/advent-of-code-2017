@@ -35,9 +35,11 @@ type OutputA = Int
 type OutputB = Int
 
 ------------ PART A ------------
+-- Rotates a list by a given number
 shift :: Int -> [Int] -> [Int]
 shift n list = (drop n list) ++ (L.take n list)
 
+-- Calculates the captchaScore of a pair of numbers
 captchaScore :: Int -> Int -> Int
 captchaScore a b = if a == b then a else 0
 

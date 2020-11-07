@@ -37,6 +37,8 @@ type OutputA = Int
 type OutputB = Int
 
 ------------ PART A ------------
+-- Recursively test whether a passphrase is valid
+-- For part a, this involves checking to see if the phrase contained two of the same word.
 passPhraseUnique :: [String] -> Bool
 passPhraseUnique [] = True
 passPhraseUnique (s : ss) =
@@ -44,12 +46,11 @@ passPhraseUnique (s : ss) =
     && passPhraseUnique ss
 
 partA :: Input -> OutputA
-partA =
-  foldr
-    (\p a -> if passPhraseUnique p then a + 1 else a)
-    0
+partA = length . filter passPhraseUnique
 
 ------------ PART B ------------
+-- Recursively tests whether a passphrase is valid
+-- For part b, this checks whether any two words are anagrams of each other
 passPhraseAnagram :: [String] -> Bool
 passPhraseAnagram [] = True
 passPhraseAnagram (s : ss) =
@@ -57,7 +58,4 @@ passPhraseAnagram (s : ss) =
     && passPhraseAnagram ss
 
 partB :: Input -> OutputB
-partB =
-  foldr
-    (\p a -> if passPhraseAnagram p then a + 1 else a)
-    0
+partB = length . filter passPhraseAnagram
