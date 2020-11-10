@@ -1,4 +1,4 @@
-module Days.Day08 (runDay) where
+module Days.Day08 where
 
 import Data.Attoparsec.Text
 import Data.List
@@ -25,19 +25,91 @@ runDay = do
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = undefined
+inputParser = parseInstruction `sepBy` endOfLine
+
+parseInstruction :: Parser Instruction
+parseInstruction = do
+  mr <- many1 letter
+  space
+  mFunc <-
+    choice
+      [ asciiCI "inc" >> return (+),
+        asciiCI "dec" >> return (-)
+      ]
+  space
+  mMod <- signed decimal
+  asciiCI " if "
+  cr <- many1 letter
+  space
+  cFunc <-
+    choice
+      [ asciiCI ">=" >> return (>=),
+        asciiCI "==" >> return (==),
+        asciiCI "<=" >> return (<=),
+        asciiCI "!=" >> return (/=),
+        asciiCI ">" >> return (>),
+        asciiCI "<" >> return (<)
+      ]
+  space
+  cVal <- signed decimal
+  return
+    Instruction
+      { condition =
+          Condition
+            { cRegister = cr,
+              cCondition = (flip cFunc) cVal
+            },
+        modification =
+          Modification
+            { mRegister = mr,
+              mModification = (flip mFunc) mMod
+            }
+      }
 
 ------------ TYPES ------------
-type Input = Void
+data Instruction = Instruction
+  { condition :: Condition,
+    modification :: Modification
+  }
 
-type OutputA = Void
+instance Show Instruction where
+  show i = "Condition reg: " ++ (cRegister . condition $ i) ++ " , Modification reg: " ++ (mRegister . modification $ i)
 
-type OutputB = Void
+data Condition = Condition
+  { cRegister :: Register,
+    cCondition :: (Int -> Bool)
+  }
+
+data Modification = Modification
+  { mRegister :: Register,
+    mModification :: Int -> Int
+  }
+
+type Register = String
+
+type Input = [Instruction]
+
+type OutputA = Int
+
+type OutputB = Int
 
 ------------ PART A ------------
+executeInstruction :: Instruction -> Map String Int -> Map String Int
+executeInstruction Instruction {..} m =
+  let checkValue = Map.findWithDefault 0 (cRegister condition) m
+      modifyValue = Map.findWithDefault 0 (mRegister modification) m
+   in if (cCondition condition) checkValue
+        then Map.insert (mRegister modification) (mModification modification $ modifyValue) m
+        else m
+
 partA :: Input -> OutputA
-partA = undefined
+partA input =
+  let finalRegisters = foldr1 (flip (.)) (fmap executeInstruction input) $ Map.empty
+   in maximum . Map.elems $ finalRegisters
 
 ------------ PART B ------------
 partB :: Input -> OutputB
-partB = undefined
+partB input =
+  let partialExecutions = scanl1 (flip (.)) (fmap executeInstruction input)
+      finalRegisterValues = concat . fmap Map.elems . fmap (flip ($) Map.empty) $ partialExecutions
+   in maximum finalRegisterValues
