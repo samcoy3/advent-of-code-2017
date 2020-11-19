@@ -20,6 +20,7 @@ description:         Solutions to the 2017 Advent of Code puzzles, written in Ha
 
 dependencies:
 - base >= 4.7 && < 5
+- directory
 - containers
 - text
 - attoparsec
@@ -51,5 +52,18 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    default-extensions:
+    - EmptyCase
+    - FlexibleContexts
+    - FlexibleInstances
+    - InstanceSigs
+    - MultiParamTypeClasses
+    - LambdaCase
+    - MultiWayIf
+    - RecordWildCards
+    - TupleSections
+    - OverloadedStrings
+    - ScopedTypeVariables
+    - GADTs
     dependencies:
     - aoc2017
