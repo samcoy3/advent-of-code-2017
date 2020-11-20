@@ -20,22 +20,50 @@ import Data.Void
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = undefined
+inputParser = hexPoint `sepBy` char ','
+  where
+    hexPoint =
+      HexPoint
+        <$> choice
+          [ asciiCI "ne" >> return (1, 0),
+            asciiCI "sw" >> return (-1, 0),
+            asciiCI "se" >> return (1, -1),
+            asciiCI "nw" >> return (-1, 1),
+            char 'n' >> return (0, 1),
+            char 's' >> return (0, -1)
+          ]
 
 ------------ TYPES ------------
-type Input = Void
+type Input = [HexPoint]
 
-type OutputA = Void
+type OutputA = Int
 
-type OutputB = Void
+type OutputB = Int
+
+-- A hex-based co-ordinate system.
+-- The "x" axis runs sw-ne, and the "y" axis runs s-n
+newtype HexPoint = HexPoint {getPoint :: (Int, Int)}
+  deriving (Eq, Ord)
+
+-- Hex-vector addition
+(<+>) :: HexPoint -> HexPoint -> HexPoint
+(<+>) (HexPoint (x1, y1)) (HexPoint (x2, y2)) = HexPoint (x1 + x2, y1 + y2)
 
 ------------ PART A ------------
+-- Using a little known property of this hex coordinate system to extract the distance
+distance :: HexPoint -> HexPoint -> Int
+distance (HexPoint (x1, y1)) (HexPoint (x2, y2)) =
+  let x = x2 - x1
+      y = y2 - y1
+      z = - (x + y)
+   in (abs (x) + abs (y) + abs (z)) `div` 2
+
 partA :: Input -> OutputA
-partA = undefined
+partA = distance (HexPoint (0, 0)) . foldr (<+>) (HexPoint (0, 0))
 
 ------------ PART B ------------
 partB :: Input -> OutputB
-partB = undefined
+partB = maximum . fmap (distance (HexPoint (0, 0))) . scanl (<+>) (HexPoint (0, 0))
 
 ------------ DAY LOGIC ------------
 runDay :: String -> IO ()
