@@ -18,12 +18,12 @@ import Data.Attoparsec.Text
 import Data.Void
 {- ORMOLU_ENABLE -}
 
-runDay :: String -> IO ()
+runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = ((\(a, _, b) -> (a, b)) . Graph.graphFromEdges) <$> adjacencyLine `sepBy` endOfLine
+inputParser = Input . ((\(a, _, b) -> (a, b)) . Graph.graphFromEdges) <$> adjacencyLine `sepBy` endOfLine
   where
     adjacencyLine = do
       vertex <- decimal
@@ -34,7 +34,10 @@ inputParser = ((\(a, _, b) -> (a, b)) . Graph.graphFromEdges) <$> adjacencyLine 
 ------------ TYPES ------------
 type Indexer = Int -> Maybe Int
 
-type Input = (Graph, Indexer)
+newtype Input = Input (Graph, Indexer)
+
+instance Show Input where
+  show (Input (g, i)) = show g
 
 type OutputA = Int
 
@@ -42,8 +45,8 @@ type OutputB = Int
 
 ------------ PART A ------------
 partA :: Input -> OutputA
-partA (g, i) = length . head $ Graph.dfs g [(fromJust $ i 0)]
+partA (Input (g, i)) = length . head $ Graph.dfs g [(fromJust $ i 0)]
 
 ------------ PART B ------------
 partB :: Input -> OutputB
-partB (g, i) = length $ Graph.dff g
+partB (Input (g, i)) = length $ Graph.dff g

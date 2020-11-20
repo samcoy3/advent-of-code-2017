@@ -16,7 +16,7 @@ import Data.Void
 import qualified Data.Text as Text
 {- ORMOLU_ENABLE -}
 
-runDay :: String -> IO ()
+runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------

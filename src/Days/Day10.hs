@@ -95,8 +95,8 @@ partB :: Input -> OutputB
 partB = concat . fmap hexify . densifyHash . (flip sixtyFourRounds) standardList
 
 ------------ DAY LOGIC ------------
-runDay :: String -> IO ()
-runDay inputFile = do
+runDay :: Bool -> String -> IO ()
+runDay _ inputFile = do
   input <- runExceptT $ do
     inputFileExists <- liftIO $ doesFileExist inputFile
     fileContents <-

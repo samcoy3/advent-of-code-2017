@@ -15,7 +15,7 @@ import Data.Attoparsec.Text
 import Data.Void
 {- ORMOLU_ENABLE -}
 
-runDay :: String -> IO ()
+runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
@@ -43,7 +43,7 @@ type OutputB = Int
 -- A hex-based co-ordinate system.
 -- The "x" axis runs sw-ne, and the "y" axis runs s-n
 newtype HexPoint = HexPoint {getPoint :: (Int, Int)}
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Show)
 
 -- Hex-vector addition
 (<+>) :: HexPoint -> HexPoint -> HexPoint

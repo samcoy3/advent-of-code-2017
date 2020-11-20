@@ -17,7 +17,7 @@ import qualified Data.Tree as Tree
 import Data.Void
 {- ORMOLU_ENABLE -}
 
-runDay :: String -> IO ()
+runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
@@ -38,6 +38,7 @@ data ProcessTree = ProcessTree
   { processWeights :: Map String Int,
     processDependencies :: Map String String
   }
+  deriving (Show)
 
 -- Given one line of the problem input, combines it with an existing ProcessTree
 insertProcessAndEdges :: (String, Int) -> [String] -> ProcessTree -> ProcessTree
