@@ -13,13 +13,13 @@ import qualified Data.Vector as Vec
 import Data.Bits
 import Data.Char
 import Text.Printf
-
-import System.Directory (doesFileExist)
-import Control.Exception (catch, SomeException)
-import Control.Monad.Except
 import Data.Attoparsec.Text
-import Data.Text (pack)
 import Data.Void
+
+import Control.Exception (SomeException, catch)
+import Control.Monad.Except
+import Data.Text (pack)
+import System.Directory (doesFileExist)
 {- ORMOLU_ENABLE -}
 
 ------------ PARSER ------------
