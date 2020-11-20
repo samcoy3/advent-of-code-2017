@@ -10,6 +10,10 @@ import qualified Data.Set as Set
 import Data.Vector (Vector)
 import qualified Data.Vector as Vec
 
+import Data.Graph (Graph)
+import qualified Data.Graph as Graph
+import Data.Maybe
+
 import System.Directory (doesFileExist)
 import Control.Exception (catch, SomeException)
 import Control.Monad.Except
@@ -20,22 +24,30 @@ import Data.Void
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = undefined
+inputParser = ((\(a, _, b) -> (a, b)) . Graph.graphFromEdges) <$> adjacencyLine `sepBy` endOfLine
+  where
+    adjacencyLine = do
+      vertex <- decimal
+      asciiCI " <-> "
+      connections <- decimal `sepBy` asciiCI ", "
+      return (vertex, vertex, connections)
 
 ------------ TYPES ------------
-type Input = Void
+type Indexer = Int -> Maybe Int
 
-type OutputA = Void
+type Input = (Graph, Indexer)
 
-type OutputB = Void
+type OutputA = Int
+
+type OutputB = Int
 
 ------------ PART A ------------
 partA :: Input -> OutputA
-partA = undefined
+partA (g, i) = length . head $ Graph.dfs g [(fromJust $ i 0)]
 
 ------------ PART B ------------
 partB :: Input -> OutputB
-partB = undefined
+partB (g, i) = length $ Graph.dff g
 
 ------------ DAY LOGIC ------------
 runDay :: String -> IO ()
