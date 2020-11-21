@@ -10,6 +10,9 @@ import qualified Data.Set as Set
 import Data.Vector (Vector)
 import qualified Data.Vector as Vec
 
+import Util.KnotHash
+import Data.Char
+
 import qualified Program.RunDay as R (runDay)
 import Data.Attoparsec.Text
 import Data.Void
@@ -20,18 +23,18 @@ runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = undefined
+inputParser = init <$> many1 anyChar
 
 ------------ TYPES ------------
-type Input = Void
+type Input = String
 
-type OutputA = Void
+type OutputA = Int
 
 type OutputB = Void
 
 ------------ PART A ------------
 partA :: Input -> OutputA
-partA = undefined
+partA input = length . filter (== '1') . (concatMap (binarifyHash . knotHash . fmap ord . ((input ++ "-") ++) . show)) $ [0 .. 127]
 
 ------------ PART B ------------
 partB :: Input -> OutputB

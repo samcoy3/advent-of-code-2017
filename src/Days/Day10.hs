@@ -16,6 +16,8 @@ import Text.Printf
 import Data.Attoparsec.Text
 import Data.Void
 
+import Util.KnotHash (knotHash)
+
 import Control.Exception (SomeException, catch)
 import Control.Monad.Except
 import Data.Text (pack)
@@ -62,9 +64,9 @@ partA input =
    in (resultVec Vec.! 0) * (resultVec Vec.! 1)
 
 ------------ PART B ------------
--- Converts the input into ASCII, and appends the required array
+-- Converts the input into ASCII
 inputToAscii :: String -> [Int]
-inputToAscii = (++ [17, 31, 73, 47, 23]) . fmap ord
+inputToAscii = fmap ord
 
 -- Performs 64 rounds of the hash
 sixtyFourRounds :: [Int] -> Vector a -> Vector a
@@ -92,7 +94,7 @@ hexify :: Int -> String
 hexify = printf "%02x"
 
 partB :: Input -> OutputB
-partB = concat . fmap hexify . densifyHash . (flip sixtyFourRounds) standardList
+partB = knotHash
 
 ------------ DAY LOGIC ------------
 runDay :: Bool -> String -> IO ()
