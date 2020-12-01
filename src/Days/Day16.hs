@@ -1,6 +1,7 @@
 module Days.Day16 (runDay) where
 
 {- ORMOLU_DISABLE -}
+import Control.Monad ((>=>))
 import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -48,7 +49,7 @@ type Input = [DanceMove]
 
 type OutputA = String
 
-type OutputB = Void
+type OutputB = String
 
 ------------ PART A ------------
 perform :: DanceMove -> (Vector Char -> Vector Char)
@@ -66,5 +67,29 @@ partA :: Input -> OutputA
 partA moves = Vec.toList . foldr1 (flip (.)) (fmap perform moves) . Vec.fromList $ ['a' .. 'p']
 
 ------------ PART B ------------
+-- Given a map, create a new map by performing lookups from the previous map 10 times.
+dectupleMap :: (Ord a) => Map a a -> Map a a
+dectupleMap m =
+  let tenMapLookups = foldr1 (.) (replicate 10 (m Map.!))
+   in Map.fromList . fmap (\k -> (k, tenMapLookups k)) . Map.keys $ m
+
+-- Creates an infinite list of a map, that map performed 10 times, that map performed 100 times, and so on
+powerOfTenList :: (Ord a) => Map a a -> [Map a a]
+powerOfTenList = unfoldr (\m -> let m' = dectupleMap m in Just (m', m'))
+
+-- We need to separate dance moves that care about the integer position from those that care about the character
+isPositional :: DanceMove -> Bool
+isPositional (Partner _ _) = False
+isPositional _ = True
+
+-- Converts a series of dance moves to a map giving a character's position before and after the moves have been performed
+oneDanceToLookup :: [DanceMove] -> Map Char Char
+oneDanceToLookup moves = Map.fromList . zip ['a' .. 'p'] . Vec.toList . foldr1 (flip (.)) (fmap perform moves) . Vec.fromList $ ['a' .. 'p']
+
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB input =
+  let posSwaps = filter isPositional input
+      charSwaps = filter (not . isPositional) input
+      posPowerOfTenList = powerOfTenList $ oneDanceToLookup posSwaps
+      charPowerOfTenList = powerOfTenList $ oneDanceToLookup charSwaps
+   in fmap ((Map.!) (charPowerOfTenList !! 10) . (Map.!) (posPowerOfTenList !! 10)) $ ['a' .. 'p']
