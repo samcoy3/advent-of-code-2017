@@ -27,6 +27,7 @@ dependencies:
 - optparse-applicative
 - mtl
 - vector
+- pointedlist
 
 library:
   source-dirs: src
