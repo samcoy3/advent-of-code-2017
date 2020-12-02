@@ -16,6 +16,8 @@ import qualified Data.List.PointedList.Circular as C
 import qualified Program.RunDay as R (runDay)
 import Data.Attoparsec.Text
 import Data.Void
+
+import Control.Monad.State
 {- ORMOLU_ENABLE -}
 
 runDay :: Bool -> String -> IO ()
@@ -46,5 +48,41 @@ partA :: Input -> OutputA
 partA = insertValues 2017
 
 ------------ PART B ------------
-partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+data SimplifiedSpinlock = SimplifiedSpinlock
+  { pos :: Int,
+    len :: Int,
+    rightOfZero :: Int
+  }
+  deriving (Show)
+
+type Day17 = State SimplifiedSpinlock
+
+spin :: Int -> Int -> Day17 ()
+spin steps n = do
+  modify
+    ( \s@SimplifiedSpinlock {..} ->
+        s
+          { pos = (pos + steps) `mod` len,
+            len = len + 1
+          }
+    )
+  newPos <- gets pos
+  modify
+    ( \s@SimplifiedSpinlock {..} ->
+        s {pos = pos + 1}
+    )
+  when (newPos == 0) $
+    modify
+      ( \s ->
+          s
+            { rightOfZero = n
+            }
+      )
+
+-- partB :: Input -> OutputB
+partB steps =
+  rightOfZero
+    . flip execState (SimplifiedSpinlock {pos = 0, len = 1, rightOfZero = 0})
+    . sequence_
+    . fmap (spin steps)
+    $ [1 .. 50_000_000]
