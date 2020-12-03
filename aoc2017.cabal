@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b1d011bdd5ea5a466d9caa2f5444d9c4d9cf59f0a940567666b263c08f04c7a5
+-- hash: 915d66f627dcbf971b3b3034903bc6e7b80e830e78b36d6f1b22b150d72e5ea3
 
 name:           aoc2017
 version:        0.1.0.0
@@ -66,6 +66,7 @@ library
     , directory
     , mtl
     , optparse-applicative
+    , parser-combinators
     , pointedlist
     , text
     , vector
@@ -87,6 +88,7 @@ executable aoc-template-exe
     , directory
     , mtl
     , optparse-applicative
+    , parser-combinators
     , pointedlist
     , text
     , vector

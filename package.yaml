@@ -28,6 +28,7 @@ dependencies:
 - mtl
 - vector
 - pointedlist
+- parser-combinators
 
 library:
   source-dirs: src
